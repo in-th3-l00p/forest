@@ -26,7 +26,7 @@ namespace Engine
 
 			Player& player;
 			Map& map;
-			std::map<int, Entity*>& entities;
+			std::vector<Entity*>& entities;
 			mutable std::vector<float> zBuffer;
 
 			static float mapInterval(float x, float inMin, float inMax, float outMin, float outMax);
@@ -44,7 +44,7 @@ namespace Engine
 			Intersection raycast(float& angle) const;
 
 		public:
-			Raycaster(Player& player, Map& map, std::map<int, Entity*> entities);
+			Raycaster(Player& player, Map& map, std::vector<Entity*>& entities);
 			void render(sf::RenderWindow& window) const;
 		};
 	}

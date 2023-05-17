@@ -127,8 +127,6 @@ namespace Engine
 
 		sf::Color Raycaster::depthColor(float distance)
 		{
-			if (distance > Config::Graphics::Raycaster::renderDistance)
-				return sf::Color(0, 0, 0);
 			int r = mapInterval(distance, 0, Config::Graphics::Raycaster::renderDistance, 255, 0);
 			return sf::Color(r, r, r);
 		}
@@ -228,49 +226,30 @@ namespace Engine
 			});
 
 			// drawing sprites
-			sf::CircleShape spriteCircle;
 			for (auto& sprite : sprites)
 			{
 				float distance = sprite.first;
 				Entity* entity = sprite.second;
 
-				float angle = std::atan2(
-					entity->position.y - player.position.y,
-					entity->position.x - player.position.x 
-				);
-				if (angle < 0)
-					angle += RAD360;
-
-				float fovAngle = (player.angle - Config::Graphics::Raycaster::fieldOfView / 2);
-				while (fovAngle < 0)
-					fovAngle += RAD360;
-				while (fovAngle > RAD360)
-					fovAngle -= RAD360;
-				angle -= fovAngle;
-				
 				sf::Vector2f position{
-					angle * (window.getSize().x / Config::Graphics::Raycaster::fieldOfView),
-					static_cast<float>(window.getSize().y) / 2
+					entity->position.x - player.position.x,
+					entity->position.y - player.position.y
 				};
+
+				float playerSpriteAngle = std::atan2(position.x, position.y);
+				float fovSpriteAngle = (
+					player.angle + 
+					(Config::Graphics::Raycaster::fieldOfView / 2) - 
+					playerSpriteAngle
+					);
+
+				position.x = fovSpriteAngle * (window.getSize().x / Config::Graphics::Raycaster::fieldOfView);
+				position.y = window.getSize().y / 2;
+
 
 				sf::Sprite spriteShape;
 				spriteShape.setTexture(entity->texture);
 				spriteShape.setPosition(position);
-				spriteShape.setScale(
-					(
-						static_cast<float>(window.getSize().y) /
-						(distance * Config::Graphics::Raycaster::distanceMultiplier)
-					),
-					(
-						static_cast<float>(window.getSize().y) /
-						(distance * Config::Graphics::Raycaster::distanceMultiplier)
-					)
-				);
-				spriteShape.setOrigin(
-					static_cast<float>(entity->texture.getSize().x) / 2,
-					static_cast<float>(entity->texture.getSize().y) / 2
-				);
-				spriteShape.setColor(depthColor(distance));
 				window.draw(spriteShape);
 			}
 

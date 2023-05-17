@@ -6,19 +6,23 @@ namespace Engine
 	{ 
 		WallTexture::WallTexture(const std::string& fileName) 
 		{
-			if (!texture.loadFromFile(fileName))
+			sf::Image image;
+			if (!image.loadFromFile(fileName))
 				throw std::runtime_error("Image file doesn't exist");
-			if (texture.getSize() != sf::Vector2u{ textureSize, textureSize })
+			if (image.getSize() != sf::Vector2u{ textureSize, textureSize })
 				throw std::runtime_error("Invalid image size");
-			sf::Image image = texture.copyToImage();
+			texture.loadFromImage(image);
 			for (int i = 0; i < textureSize; i++)
-				for (int j = 0; j < textureSize; j++)
-					matrix[j][i] = image.getPixel(i, j);
+			{
+				sf::Texture column;
+				column.loadFromImage(image, { i, 0, 1, textureSize });
+				columns[i] = column;
+			}
 		}
 
-		const ColorVec& WallTexture::getColumn(int index) const
+		const sf::Texture& WallTexture::getColumn(int index) const
 		{
-			return matrix[index];
+			return columns[index];
 		}
 
 

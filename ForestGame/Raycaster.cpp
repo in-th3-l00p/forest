@@ -136,11 +136,12 @@ namespace Engine
 				window.getSize().y / 2 - (cellSize * map.getMatrix().size()) / 2
 			};
 
+			sf::Sprite lineSprite;
 			float lineWidth = window.getSize().x / Config::Graphics::Raycaster::lineCount;
 			int currentLine = 0;
 			for (
 				float angleLoop = player.angle - Config::Graphics::Raycaster::fieldOfView / 2;
-				angleLoop < player.angle + Config::Graphics::Raycaster::fieldOfView / 2; 
+				angleLoop < player.angle + Config::Graphics::Raycaster::fieldOfView / 2;
 				angleLoop += Config::Graphics::Raycaster::raycastStep, currentLine++
 				)
 			{
@@ -155,20 +156,23 @@ namespace Engine
 
 				// used for fixing the fisheye effect
 				float ratio = std::cos(angle - player.angle);
-
-				float lineHeight = 
+				float lineHeight =
 					(
-						window.getSize().y / 
+						static_cast<float>(window.getSize().y) /
 						(intersection.distance * Config::Graphics::Raycaster::distanceMultiplier * ratio)
-					) * Config::Graphics::Raycaster::lineMultiplier;
-				sf::RectangleShape line;
-				line.setSize({ lineWidth, lineHeight });
-				line.setPosition({ currentLine * lineWidth , window.getSize().y / 2 - lineHeight / 2 });
+						) * Config::Graphics::Raycaster::lineMultiplier;
+				float pixelHeight = lineHeight / Config::Graphics::textureSize;
+				lineSprite.setTexture(intersection.cell->textures[0].getColumn(0));
+				lineSprite.setScale(lineWidth, lineHeight / Config::Graphics::textureSize);
+				lineSprite.setPosition(
+					currentLine * lineWidth, 
+					window.getSize().y / 2 - lineHeight / 2
+				);
 				if (intersection.horizontal)
-					line.setFillColor(sf::Color::White);
+					lineSprite.setColor(sf::Color(200, 200, 200));
 				else
-					line.setFillColor(sf::Color(200, 200, 200, 255));
-				window.draw(line);
+					lineSprite.setColor(sf::Color(255, 255, 255));
+				window.draw(lineSprite);
 			}
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))

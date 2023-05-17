@@ -16,13 +16,13 @@ namespace Engine
 		private:
 			// the image is stored rotated at 90 degrees, because it is easier to work with
 			// the render is done horizontally, so getting each column of the texture is more efficient
-			ColorMatrix matrix;
 			sf::Texture texture;
+			std::array<sf::Texture, Config::Graphics::textureSize> columns;
 
 		public:
 			WallTexture(const std::string& fileName);
-			const ColorVec& getColumn(int index) const;
-			
+
+			const sf::Texture& getColumn(int index) const;
 			const sf::Texture& getTexture();
 
 		};

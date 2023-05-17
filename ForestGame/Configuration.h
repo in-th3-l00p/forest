@@ -34,7 +34,7 @@ namespace Engine
 
 			namespace Raycaster
 			{
-				static const float fieldOfView = TO_RAD(75);
+				static const float fieldOfView = TO_RAD(30);
 				static const float raycastStep = TO_RAD(0.05);
 				static const float lineCount = fieldOfView / raycastStep;
 				static const float renderDistance = 100;

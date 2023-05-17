@@ -26,7 +26,9 @@ namespace Engine
 			virtual void update(float& deltaTime) = 0;
 			virtual void render(sf::RenderWindow& window) const = 0;
 
-			virtual void onResize(int width, int height) {};
+			virtual void onResize(int width, int height) {}
+
+			virtual void onClick(sf::Vector2f mousePosition) {}
 		};
 
 		class MainMenu : public Scene
@@ -39,6 +41,8 @@ namespace Engine
 
 			void update(float& deltaTime) override;
 			void render(sf::RenderWindow& window) const override;
+			
+			void onClick(sf::Vector2f mousePosition) override;
 		};
 
 		class RaycasterTest : public Scene

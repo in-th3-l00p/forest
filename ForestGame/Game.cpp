@@ -5,6 +5,7 @@ Engine::Game::Game()
 	: window(Config::Window::size, Config::Window::title)
 {
 	Config::Assets::getAssets();
+	//this->currentScene = new Scenes::MainMenu([](Scenes::Scene*) {});
 	this->currentScene = new Scenes::RaycasterTest([](Scenes::Scene*) {});
 }
 
@@ -19,6 +20,10 @@ void Engine::Game::run()
 			{
 			case sf::Event::Closed:
 				window.close();
+				break;
+			case sf::Event::MouseButtonPressed:
+				if (event.mouseButton.button == sf::Mouse::Left)
+					this->currentScene->onClick(window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y)));
 				break;
 			case sf::Event::Resized:
 				sf::FloatRect view(0, 0, event.size.width, event.size.height);

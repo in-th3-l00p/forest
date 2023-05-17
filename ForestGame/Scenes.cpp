@@ -1,4 +1,5 @@
 #include "Scenes.h"
+#include <iostream>
 
 namespace Engine {
 	namespace Scenes 
@@ -14,8 +15,50 @@ namespace Engine {
 		}
 
 		MainMenu::MainMenu(std::function<void(Scene*)> sceneChanger)
-			: Scene(sceneChanger), mainLayout({ new Ui::Button("Start"), new Ui::Button("Test")})
+			: Scene(sceneChanger), mainLayout({})
 		{
+			float height = Config::Window::size.height;
+			float width = Config::Window::size.width;
+
+			/*sf::Vector2f buttonSize = { 150, 75 };
+
+			Ui::Button* startButton = new Ui::Button("Start");
+			startButton->setPosition({ (float)(width / 2 - buttonSize.x / 2), 200 } );
+			startButton->setSize(buttonSize);
+			
+			mainLayout.addWidget(startButton);*/
+
+			Ui::Label* title = new Ui::Label("\tTransylvanian Tales\nShadows of Enchantment");
+			title->setPosition({ (float)(width / 2 - 325), 100 });
+			title->setSize({ 500, 400 });
+			title->setFontSize(50);
+
+			Ui::Button* startButton = new Ui::Button("Start");
+			startButton->setPosition({ (float)(width / 2 - 100), 275 });
+			startButton->setSize({ 225, 90 });
+
+			Ui::Button* exitButton = new Ui::Button("Exit");
+			exitButton->setPosition({ (float)(width / 2 - 100), 526 });
+			exitButton->setSize({ 225, 90 });
+
+			Ui::Button* creditsButton = new Ui::Button("Credits");
+			creditsButton->setPosition({ (float)(width / 2 - 100), 400 });
+			creditsButton->setSize({ 225, 90 });
+
+			mainLayout.addWidget(title);
+			mainLayout.addWidget(startButton);
+			mainLayout.addWidget(exitButton);
+			mainLayout.addWidget(creditsButton);
+		}
+
+		void MainMenu::onClick(sf::Vector2f mousePosition)
+		{
+			if (mainLayout.getWidgets()[1]->isClicked(mousePosition))
+				getSceneChanger()(new Scenes::RaycasterTest([](Scenes::Scene*) {}));
+			else if (mainLayout.getWidgets()[2]->isClicked(mousePosition))
+				exit(0);
+			else if (mainLayout.getWidgets()[3]->isClicked(mousePosition))
+				std::cout << "Credits" << std::endl;
 		}
 
 		void MainMenu::update(float& deltaTime)
@@ -26,6 +69,7 @@ namespace Engine {
 		{
 			mainLayout.render(window);
 		}
+
 		RaycasterTest::RaycasterTest(std::function<void(Scene*)> sceneChanger)
 			: Scene(sceneChanger)
 		{

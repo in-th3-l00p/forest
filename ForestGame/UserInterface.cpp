@@ -22,6 +22,11 @@ void Engine::Ui::Widget::setSize(sf::Vector2f size)
 	this->size = size;
 }
 
+bool Engine::Ui::Widget::isClicked(sf::Vector2f mousePosition)
+{
+	return false;
+}
+
 Engine::Ui::Button::Button(std::string text, sf::Vector2f positon, sf::Vector2f size)
 {
 	this->text = text;
@@ -36,7 +41,7 @@ Engine::Ui::Button::Button(std::string text, sf::Vector2f positon, sf::Vector2f 
 	background.setSize({ size.x - borderSize * 2, size.y - borderSize * 2 });
 	background.setPosition({ position.x + borderSize, position.y + borderSize });
 
-	textShape.setString(L"Hello world");
+	textShape.setString(text);
 	textShape.setFont(Engine::Config::Assets::getAssets().defaultFont);
 	textShape.setCharacterSize(fontSize);
 	textShape.setPosition({ 
@@ -62,7 +67,20 @@ void Engine::Ui::Button::setPosition(sf::Vector2f position)
 		position.x + size.x / 2 - textShape.getLocalBounds().width / 2, 
 		position.y + size.y / 2 - textShape.getLocalBounds().height / 2 
 		});
+}
 
+bool Engine::Ui::Button::isClicked(sf::Vector2f mousePosition)
+{
+	if (mousePosition.x > position.x && mousePosition.x < position.x + size.x &&
+		mousePosition.y > position.y && mousePosition.y < position.y + size.y)
+		return true;
+	return false;
+}
+
+void Engine::Ui::Button::setFontSize(int fontSize)
+{
+	this->fontSize = fontSize;
+	textShape.setCharacterSize(fontSize);
 }
 
 void Engine::Ui::Button::setSize(sf::Vector2f size)
@@ -76,22 +94,79 @@ void Engine::Ui::Button::setSize(sf::Vector2f size)
 		});
 }
 
+void Engine::Ui::Button::setText(std::string text)
+{
+	this->text = text;
+	textShape.setString(text);
+	textShape.setPosition({
+		position.x + size.x / 2 - textShape.getLocalBounds().width / 2, 
+		position.y + size.y / 2 - textShape.getLocalBounds().height / 2 
+		});
+}
+
+void Engine::Ui::Button::setBackgroundColor(sf::Color color)
+{
+	backgroundColor = color;
+	background.setFillColor(backgroundColor);
+}
+
+void Engine::Ui::Button::setTextColor(sf::Color color)
+{
+	textColor = color;
+	textShape.setFillColor(textColor);
+}
+
+void Engine::Ui::Button::setBorderColor(sf::Color color)
+{
+	borderColor = color;
+	border.setFillColor(borderColor);
+}
+
 Engine::Ui::Label::Label(std::string text, sf::Vector2f positon, sf::Vector2f size)
 {
 	this->text = text;
 	this->position = position;
 	this->size = size;
 
-	textShape.setString(L"Hello world");
+	textShape.setString(text);
 	textShape.setFont(Engine::Config::Assets::getAssets().defaultFont);
 	textShape.setCharacterSize(fontSize);
 	textShape.setPosition(position);
 	textShape.setFillColor(textColor);
 }
 
+void Engine::Ui::Label::setText(std::string text)
+{
+	this->text = text;
+	textShape.setString(text);
+}
+
+void Engine::Ui::Label::setFontSize(int fontSize)
+{
+	this->fontSize = fontSize;
+	textShape.setCharacterSize(fontSize);
+}
+
+void Engine::Ui::Label::setPosition(sf::Vector2f position)
+{
+	this->position = position;
+	textShape.setPosition(position);
+}
+
+void Engine::Ui::Label::setSize(sf::Vector2f size)
+{
+	this->size = size;
+}
+
 void Engine::Ui::Label::render(sf::RenderWindow& window) const
 {
 	window.draw(textShape);
+}
+
+void Engine::Ui::Label::setTextColor(sf::Color color)
+{
+	textColor = color;
+	textShape.setFillColor(textColor);
 }
 
 Engine::Ui::HorizontalLayout::HorizontalLayout(std::vector<Widget*> widgets, sf::Vector2f position, int spacing)
@@ -139,3 +214,10 @@ void Engine::Ui::HorizontalLayout::addWidget(Widget* widget)
 {
 	widgets.push_back(widget);
 }
+
+std::vector<Engine::Ui::Widget*> Engine::Ui::HorizontalLayout::getWidgets() const
+{
+	return widgets;
+}
+
+

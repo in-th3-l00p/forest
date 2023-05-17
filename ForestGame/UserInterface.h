@@ -21,16 +21,17 @@ namespace Engine
 			sf::Vector2f getSize() const;
 			virtual void setPosition(sf::Vector2f position);
 			virtual void setSize(sf::Vector2f size);
+			virtual bool isClicked(sf::Vector2f mousePosition);
 		};
 
 		class Button: public Widget
 		{
 		private:
-			const sf::Color backgroundColor = sf::Color::Black;
-			const sf::Color textColor = sf::Color::White;
-			const sf::Color borderColor = sf::Color::White;
-			const int borderSize = 8;
-			const int fontSize = 24;
+			sf::Color backgroundColor = sf::Color::Black;
+			sf::Color textColor = sf::Color::White;
+			sf::Color borderColor = sf::Color::White;
+			int borderSize = 4;
+			int fontSize = 30;
 
 			std::string text;
 
@@ -46,13 +47,21 @@ namespace Engine
 
 			void setPosition(sf::Vector2f position) override;
 			void setSize(sf::Vector2f position) override;
+
+			bool isClicked(sf::Vector2f mousePosition) override;
+
+			void setFontSize(int fontSize);
+			void setText(std::string text);
+			void setBackgroundColor(sf::Color color);
+			void setTextColor(sf::Color color);
+			void setBorderColor(sf::Color color);
 		};
 
 		class Label : public Widget
 		{
 		private:
-			const sf::Color textColor = sf::Color::White;
-			const int fontSize = 24;
+			sf::Color textColor = sf::Color::White;
+			int fontSize = 24;
 			std::string text;
 			sf::Text textShape;
 
@@ -60,6 +69,13 @@ namespace Engine
 			Label(std::string text, sf::Vector2f positon = { 0, 0 }, sf::Vector2f size = { 180, 80 });
 			void update(float& deltaTime) override {};
 			void render(sf::RenderWindow& window) const override;
+
+			void setPosition(sf::Vector2f position) override;
+			void setSize(sf::Vector2f position) override;
+
+			void setText(std::string text);
+			void setFontSize(int fontSize);
+			void setTextColor(sf::Color color);
 		};
 
 		class HorizontalLayout : public Widget
@@ -80,6 +96,8 @@ namespace Engine
 			void render(sf::RenderWindow& window) const override;
 
 			void addWidget(Widget* widget);
+
+			std::vector<Widget*> getWidgets() const;
 		};
 	}
 }

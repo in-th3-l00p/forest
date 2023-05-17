@@ -9,7 +9,7 @@ namespace Engine
 		{
 			Cell texturedCell;
 			texturedCell.empty = false;
-			texturedCell.textures.push_back(Graphics::WallTexture("C:/Users/tisca/Desktop/ForestGame/x64/Debug/stoneWall.png"));
+			texturedCell.textures.push_back(new Graphics::WallTexture(Config::Assets::getAssets().brickTexture));
 			Cell emptyCell;
 			emptyCell.empty = true;
 
@@ -38,7 +38,7 @@ namespace Engine
 				for (int x = 0; x < matrix[y].size(); x++) {
 					if (!matrix[y][x].empty) {
 						sf::Sprite sprite;
-						sprite.setTexture(matrix[y][x].textures[0].getTexture());
+						sprite.setTexture(matrix[y][x].textures[0]->getTexture());
 						sprite.setPosition(startPosition + sf::Vector2f{ x * cellSize, y * cellSize });
 						sprite.setScale({
 							cellSize / Engine::Config::Graphics::textureSize,

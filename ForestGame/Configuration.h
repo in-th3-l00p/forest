@@ -34,14 +34,16 @@ namespace Engine
 
 			namespace Raycaster
 			{
-				static const float fieldOfView = TO_RAD(30);
+				static const float fieldOfView = TO_RAD(45);
 				static const float raycastStep = TO_RAD(0.05);
 				static const float lineCount = fieldOfView / raycastStep;
+
 				static const float renderDistance = 100;
 				static const float renderDistanceSquare = renderDistance * renderDistance;
 
-				static const float lineMultiplier = 17;
+				static const float lineMultiplier = 40;
 				static const float distanceMultiplier = 2;
+				static const float horizontalDarkenMultiplier = 0.6;
 			}
 		}
 
@@ -57,6 +59,9 @@ namespace Engine
 		public:
 			std::string executablePath;
 			sf::Font defaultFont;
+
+			sf::Texture brickTexture;
+			sf::Texture treeTexture;
 
 		private:
 			static Assets* assets;

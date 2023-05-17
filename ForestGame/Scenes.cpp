@@ -13,6 +13,12 @@ namespace Engine {
 			this->sceneChanger = sceneChanger;
 		}
 
+		Scene::~Scene()
+		{
+			for (auto& entity : entities)
+				delete entity.second;
+		}
+
 		MainMenu::MainMenu(std::function<void(Scene*)> sceneChanger)
 			: Scene(sceneChanger), mainLayout({ new Ui::Button("Start"), new Ui::Button("Test")})
 		{
@@ -33,7 +39,8 @@ namespace Engine {
 			player = std::make_unique<Logics::Player>();
 			player->position = { 100, 100 };
 			player->radius = 16;
-			raycaster = std::make_unique<Logics::Raycaster>(*player, *map);
+			entities[0] = new Logics::StaticEntity(Config::Assets::getAssets().treeTexture, {400.f, 400.f}, 30.f);
+			raycaster = std::make_unique<Logics::Raycaster>(*player, *map, entities);
 		}
 
 		void RaycasterTest::update(float& deltaTime)

@@ -1,10 +1,12 @@
 #pragma once
 
+#include <map>
 #include <memory>
 #include <functional>
 #include <SFML/Graphics.hpp>
 #include "UserInterface.h"
 #include "Raycaster.h"
+#include "Entity.h"
 
 namespace Engine
 {
@@ -16,9 +18,11 @@ namespace Engine
 			std::function<void(Scene*)> sceneChanger;
 		protected:
 			const std::function<void(Scene*)>& getSceneChanger() const;
+			std::map<int, Logics::Entity*> entities;
 
 		public:
 			Scene(std::function<void(Scene*)> sceneChanger);
+			virtual ~Scene();
 
 			virtual void update(float& deltaTime) = 0;
 			virtual void render(sf::RenderWindow& window) const = 0;

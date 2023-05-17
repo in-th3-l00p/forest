@@ -1,9 +1,12 @@
 #pragma once
 
+#include <set>
 #include <utility>
+#include <map>
 #include <SFML/Graphics.hpp>
 #include "Map.h"
 #include "Player.h"
+#include "Entity.h"
 
 namespace Engine 
 {
@@ -12,9 +15,6 @@ namespace Engine
 		class Raycaster
 		{
 		private:
-			Player& player;
-			Map& map;
-
 			struct Intersection
 			{
 				const Cell* cell = nullptr;
@@ -23,6 +23,15 @@ namespace Engine
 				float distance, angle;
 				bool horizontal = true;
 			};
+
+			Player& player;
+			Map& map;
+			std::map<int, Entity*>& entities;
+			mutable std::vector<float> zBuffer;
+
+			static float mapInterval(float x, float inMin, float inMax, float outMin, float outMax);
+			static sf::Color depthColor(float distance);
+			static void horizontalDarken(sf::Color& color);
 
 			Intersection horizontalRaycast(float& angle) const;
 			Intersection verticalRaycast(float& angle) const;
@@ -35,7 +44,7 @@ namespace Engine
 			Intersection raycast(float& angle) const;
 
 		public:
-			Raycaster(Player& player, Map& map);
+			Raycaster(Player& player, Map& map, std::map<int, Entity*> entities);
 			void render(sf::RenderWindow& window) const;
 		};
 	}

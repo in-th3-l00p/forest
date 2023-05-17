@@ -8,10 +8,11 @@
 namespace Engine {
 	namespace Logics
 	{
+		// todo fix how bad this structure is (heartbleed)
 		struct Cell
 		{
 			bool empty;
-			std::vector<Graphics::WallTexture> textures;
+			std::vector<Graphics::WallTexture*> textures;
 			int animationInterval;
 		};
 

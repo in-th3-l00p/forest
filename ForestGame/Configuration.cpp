@@ -13,6 +13,8 @@ namespace Engine
 			executablePath = executablePath.substr(0, executablePath.rfind('\\'));
 
 			defaultFont.loadFromFile(executablePath + "\\assets\\default.ttf");
+			brickTexture.loadFromFile(executablePath + "\\assets\\brick.png");
+			treeTexture.loadFromFile(executablePath + "\\assets\\tree1.png");
 		}
 
 		Assets& Assets::getAssets()

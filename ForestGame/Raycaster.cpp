@@ -6,7 +6,7 @@ namespace Engine
 {
 	namespace Logics
 	{
-		Raycaster::Intersection Raycaster::verticalRaycast(float& angle) const
+		Raycaster::Intersection Raycaster::horizontalRaycast(float& angle) const
 		{
 			if (angle == RAD90 || angle == RAD270)
 				return Intersection();
@@ -28,12 +28,10 @@ namespace Engine
 			sf::Vector2f delta;
 			delta.x = map.getWallSize() * (east ? 1 : -1);
 			delta.y = delta.x * std::tan(angle);
-			Intersection intersection = runDDA(firstDistance, delta, angle, (east ? 1 : -1), 0);
-			intersection.horizontal = false;
-			return intersection;
+			return runDDA(firstDistance, delta, angle, (east ? 1 : -1), 0);
 		}
 
-		Raycaster::Intersection Raycaster::horizontalRaycast(float& angle) const
+		Raycaster::Intersection Raycaster::verticalRaycast(float& angle) const
 		{
 			if (angle == 0 || angle == RAD180)
 				return Intersection();
@@ -56,7 +54,9 @@ namespace Engine
 			sf::Vector2f delta;
 			delta.y = map.getWallSize() * (south ? 1 : -1);
 			delta.x = delta.y * (1 / std::tan(angle));
-			return runDDA(firstDistance, delta, angle, 0, (south ? 1 : -1));
+			Intersection intersection = runDDA(firstDistance, delta, angle, 0, (south ? 1 : -1));
+			intersection.horizontal = false;
+			return intersection;
 		}
 
 		Raycaster::Intersection Raycaster::runDDA(
@@ -120,9 +120,29 @@ namespace Engine
 			return vertical;
 		}
 
-		Raycaster::Raycaster(Player& player, Map& map)
-			: player(player), map(map)
+		float Raycaster::mapInterval(float x, float inMin, float inMax, float outMin, float outMax)
 		{
+			return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+		}
+
+		sf::Color Raycaster::depthColor(float distance)
+		{
+			int r = mapInterval(distance, 0, Config::Graphics::Raycaster::renderDistance, 255, 0);
+			return sf::Color(r, r, r);
+		}
+
+		void Raycaster::horizontalDarken(sf::Color& color)
+		{
+			color.r *= Config::Graphics::Raycaster::horizontalDarkenMultiplier;
+			color.g *= Config::Graphics::Raycaster::horizontalDarkenMultiplier;
+			color.b *= Config::Graphics::Raycaster::horizontalDarkenMultiplier;
+		}
+
+
+		Raycaster::Raycaster(Player& player, Map& map, std::map<int, Entity*> entities)
+			: player(player), map(map), entities(entities)
+		{
+			zBuffer.resize(1000);
 		}
 
 		void Raycaster::render(sf::RenderWindow& window) const
@@ -151,8 +171,12 @@ namespace Engine
 				else if (angle >= RAD360)
 					angle -= RAD360;
 				Intersection intersection = raycast(angle);
-				if (!intersection.cell)
+				if (!intersection.cell) 
+				{
+					zBuffer[currentLine] = FLT_MAX;
 					continue;
+				}
+				zBuffer[currentLine] = intersection.distance;
 
 				// used for fixing the fisheye effect
 				float ratio = std::cos(angle - player.angle);
@@ -160,18 +184,29 @@ namespace Engine
 					(
 						static_cast<float>(window.getSize().y) /
 						(intersection.distance * Config::Graphics::Raycaster::distanceMultiplier * ratio)
-						) * Config::Graphics::Raycaster::lineMultiplier;
+					) * Config::Graphics::Raycaster::lineMultiplier;
+
+				// getting the line's texture
+				float hit;
+				int columnIndex = 0;
+				if (intersection.horizontal)
+					hit = intersection.point.y - intersection.cellCoordinate.y * map.getWallSize();
+				else
+					hit = intersection.point.x - intersection.cellCoordinate.x * map.getWallSize();
+				columnIndex = hit / map.getWallSize() * Config::Graphics::textureSize;
+
+				// draw the line's texture
 				float pixelHeight = lineHeight / Config::Graphics::textureSize;
-				lineSprite.setTexture(intersection.cell->textures[0].getColumn(0));
+				lineSprite.setTexture(intersection.cell->textures[0]->getColumn(columnIndex));
 				lineSprite.setScale(lineWidth, lineHeight / Config::Graphics::textureSize);
 				lineSprite.setPosition(
 					currentLine * lineWidth, 
 					window.getSize().y / 2 - lineHeight / 2
 				);
+				sf::Color color = depthColor(intersection.distance);
 				if (intersection.horizontal)
-					lineSprite.setColor(sf::Color(200, 200, 200));
-				else
-					lineSprite.setColor(sf::Color(255, 255, 255));
+					horizontalDarken(color);
+				lineSprite.setColor(color);
 				window.draw(lineSprite);
 			}
 

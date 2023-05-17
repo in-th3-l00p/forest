@@ -4,11 +4,15 @@
 Engine::Game::Game()
 	: window(Config::Window::size, Config::Window::title)
 {
+	Config::Assets::getAssets();
+	this->currentScene = new Scenes::RaycasterTest([](Scenes::Scene*) {});
 }
 
 void Engine::Game::run()
 {
+	sf::Clock clock;
 	while (window.isOpen()) {
+		float deltaTime = clock.restart().asSeconds();
 		sf::Event event; // event driven programming go brttttt
 		while (window.pollEvent(event))
 			switch (event.type) 
@@ -19,10 +23,13 @@ void Engine::Game::run()
 			case sf::Event::Resized:
 				sf::FloatRect view(0, 0, event.size.width, event.size.height);
 				window.setView(sf::View(view));
+				this->currentScene->onResize(event.size.width, event.size.height);
 				break;
 			}
-		window.clear();
 
+		this->currentScene->update(deltaTime);
+		window.clear();
+		this->currentScene->render(window);
 		window.display();
 	}
 }

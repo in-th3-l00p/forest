@@ -2,7 +2,7 @@
 
 #include <set>
 #include <SFML/Graphics.hpp>
-#include "Node.h"
+#include "Scenes.h"
 
 namespace Engine 
 {
@@ -10,8 +10,8 @@ namespace Engine
 	{
 	private:
 		sf::RenderWindow window;
-		std::set<Node> nodes;
-
+		Scenes::Scene* currentScene;
+	
 	public:
 		Game();
 		~Game() = default;
